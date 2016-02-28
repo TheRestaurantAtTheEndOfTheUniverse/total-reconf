@@ -27,9 +27,17 @@
   {:name s/Str
    :email s/Str})
 
-(def dependency
+(def dep-spec
   {:name s/Str
-   :version s/Str}
+   :version s/Str
+   }
+)
+
+(def dependency
+  {:type (s/enum :required :recommended)
+   :operation (s/enum :exactly-one :at-least-one :some :all)
+   :modules [s/Uuid]
+   }
 )
 
 (def c-choice-group-value
@@ -45,7 +53,8 @@
 (def c-label
   {:language s/Str
    :key s/Str
-   :bundle s/Str})
+   :bundle s/Str
+   :value s/Str})
 
 (def c-constant
   { :module s/Str
@@ -55,52 +64,60 @@
    }
 )
 
-(def model 
-  {
+(def module-info
+  {:id s/Uuid
    :name s/Str
    :version s/Str
-   (s/optional-key :dependencies) [dependency]
    :author author
+   (s/optional-key :price) s/Num
+   (s/optional-key :upgrade-price) s/Num
+   (s/optional-key :dependencies) [dependency]
+   }
+)
+
+(def module 
+  (merge module-info
+  {
    (s/optional-key :data-entity-types) [c-dataentitytype]
    (s/optional-key :link-entity-types) [c-linkentitytype]
    (s/optional-key :choice-groups) [c-choice-group]
    (s/optional-key :choice-groups-values) [c-choice-group-value]
    (s/optional-key :labels) [c-label]
    (s/optional-key :constants) [c-constant]
-})
+}))
 
 
-(s/validate model {
-                   :name "base"
-                   :version "1.0"
-                   :dependencies [{:name "some module" :version "1.0"}
-                                  {:name "other module" :version "1.3"}
-                                  ]
-                   :author {:name "Humbug Zinkel"
-                            :email "humbug.zinkel@example.com"}
-                   :data-entity-types [
-                                       {:name "Publication"
-                                        :max-status 5
-                                        :attributes [
-                                                     {:name "Title"
-                                                      :data-type :string}
-                                                     {:name "Publication type"
-                                                      :data-type :cgv
-                                                      :choice-group "type of publication"}
-                                                     ]}
-                                       {:name "Card"
-                                        :max-status 3
-                                        :attributes [
-                                                     {:name "Function"
-                                                      :data-type :string}
-                                                     ]}
-                                       ]
+;; (s/validate model {
+;;                    :name "base"
+;;                    :version "1.0"
+;;                    :dependencies [{:name "some module" :version "1.0"}
+;;                                   {:name "other module" :version "1.3"}
+;;                                   ]
+;;                    :author {:name "Humbug Zinkel"
+;;                             :email "humbug.zinkel@example.com"}
+;;                    :data-entity-types [
+;;                                        {:name "Publication"
+;;                                         :max-status 5
+;;                                         :attributes [
+;;                                                      {:name "Title"
+;;                                                       :data-type :string}
+;;                                                      {:name "Publication type"
+;;                                                       :data-type :cgv
+;;                                                       :choice-group "type of publication"}
+;;                                                      ]}
+;;                                        {:name "Card"
+;;                                         :max-status 3
+;;                                         :attributes [
+;;                                                      {:name "Function"
+;;                                                       :data-type :string}
+;;                                                      ]}
+;;                                        ]
 
-                   :link-entity-types [
-                                       {:name "PUBL_has_CARD"
-                                        :left "Publication"
-                                        :right "Card"}
-                                       ]
-                   }            
-)
+;;                    :link-entity-types [
+;;                                        {:name "PUBL_has_CARD"
+;;                                         :left "Publication"
+;;                                         :right "Card"}
+;;                                        ]
+;;                    }            
+;; )
 
