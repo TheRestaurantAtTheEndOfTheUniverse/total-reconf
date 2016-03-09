@@ -6,6 +6,7 @@
                  [re-frame "0.6.0"]
                  [re-com "0.7.0"]
                  [garden "1.3.0"]
+                 [cljs-ajax "0.3.14"]
                  [metosin/compojure-api "1.0.0"]]
 
 
@@ -15,17 +16,12 @@
   :source-paths ["src/clj"]
 
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.0-2"]
+            [lein-figwheel "0.5.0-6"]
             [lein-garden "0.2.6"]
             [lein-cloverage "1.0.2"]]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"
                                     "resources/public/css/compiled"]
-  :profiles {:dev {:dependencies [[midje "1.6.3"]
-                                  [javax.servlet/servlet-api "2.5"]]
-                   :plugins [[lein-ring "0.9.7"]]
-                   }}
-  :figwheel {:css-dirs ["resources/public/css"]}
 
   :garden {:builds [{:id "screen"
                      :source-paths ["src/clj"]
@@ -48,4 +44,20 @@
                                    :output-to "resources/public/js/compiled/app.js"
                                    :optimizations :advanced
                                    :closure-defines {goog.DEBUG false}
-                                   :pretty-print false}}]})
+                                   :pretty-print false}}]}
+  :profiles {:dev {
+                   ;; :source-paths ["src/clj"]
+                   ;; :plugins [[lein-cljsbuild "1.1.1"]
+                   ;;           [lein-figwheel "0.5.0-6"]
+                   ;;           [lein-garden "0.2.6"]
+                   ;;           [lein-cloverage "1.0.2"]
+                   ;;           [lein-ring "0.9.7"]]
+                   :figwheel {:on-jsload "total-reconf.core/mount-root"
+                              :http-server-root "public"
+                              :server-port 3449
+                              :css-dirs ["resources/public/css"]
+                              :ring-handler total-reconf.handler/app
+                              }
+                   }}
+
+)
